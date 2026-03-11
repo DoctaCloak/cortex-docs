@@ -2,3 +2,20 @@
   --nextra-primary-hue: 16;
   --nextra-primary-saturation: 62%;
 }
+
+html, body {
+  height: 100%;
+  overflow: auto;
+}
+
+/* Nextra wraps everything in a root div — make it flex column full height */
+body > div:first-child {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main content area fills remaining space */
+body > div:first-child > div:not(:first-child):not(footer) {
+  flex: 1;
+}

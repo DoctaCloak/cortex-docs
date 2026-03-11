@@ -1,0 +1,66 @@
+---
+title: Frontend Architecture
+description: Next.js App Router frontend with Redux state management.
+---
+
+# Frontend Architecture
+
+The frontend is a Next.js 15 application using App Router, Tailwind CSS, and Redux Toolkit.
+
+## Route Structure
+
+```
+src/app/
+├── page.tsx              # Landing page
+├── demo/
+│   └── page.tsx          # Product demo (no auth required)
+├── (dashboard)/          # Route group (requires auth)
+│   ├── workspace/
+│   │   └── page.tsx      # Zettelkasten note editor
+│   ├── observatory/
+│   │   └── page.tsx      # Knowledge graph visualization
+│   ├── recall/
+│   │   └── page.tsx      # AI-powered search
+│   ├── sentinel/
+│   │   └── page.tsx      # Graph health monitoring
+│   └── bench/
+│       └── page.tsx      # Performance benchmarks
+└── api/
+    └── auth/
+        └── [...nextauth]/ # NextAuth.js handlers
+```
+
+## State Management
+
+Redux Toolkit with the following slices:
+
+| Slice | Purpose |
+|-------|---------|
+| `graph` | Knowledge graph data (notes, links, stats) |
+| `sentinel` | Graph health and sentinel configuration |
+| `nexus` | Import/export operations |
+| `recall` | Search queries and results |
+| `chat` | AI assistant conversation |
+| `ui` | UI state (sidebar, demo mode, themes) |
+| `bench` | Performance benchmark data |
+
+## Key Components
+
+### StoreProvider
+
+Wraps the app in Redux Provider. Includes a `StoreInitializer` that fetches initial data on mount — but skips fetches on `/demo` routes to avoid 503 errors.
+
+### Sidebar
+
+Navigation with tool items (Workspace, Observatory, Recall, etc.) and system items (Sentinel, Nexus, Bench).
+
+### useActivityStream Hook
+
+SSE consumer that connects to `/api/activity/stream` and pushes events into React state. Auto-reconnects on disconnect.
+
+## Styling
+
+- **Tailwind CSS** with custom `cortex-*` color palette
+- **CSS Variables** for theme consistency
+- **Dark theme** on landing/demo pages
+- **Light theme** on dashboard pages

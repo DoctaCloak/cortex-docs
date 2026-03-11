@@ -1,0 +1,73 @@
+---
+title: Spaced Repetition
+description: How Cortex uses spaced repetition to help you remember what matters.
+---
+
+# Spaced Repetition
+
+Spaced repetition is a learning technique that reviews information at increasing intervals, timed to when you're about to forget it. Cortex automatically generates flashcards from your notes and schedules them using an adaptive algorithm.
+
+## The Forgetting Curve
+
+In 1885, Hermann Ebbinghaus discovered that memory decays exponentially over time. Without review, you forget:
+
+- **50%** within 1 hour
+- **70%** within 24 hours
+- **90%** within 1 week
+
+Spaced repetition fights this by reviewing at optimal intervals:
+
+```
+Day 1    Day 3    Day 7    Day 14    Day 30    Day 90
+  ✓        ✓        ✓        ✓         ✓         ✓
+  └────────┴────────┴────────┴─────────┴─────────┘
+              Intervals grow exponentially
+```
+
+Each successful review doubles (approximately) the interval until the next review.
+
+## How Cortex Generates Flashcards
+
+When you create a note with importance ≥ 0.5, Cortex can generate flashcards:
+
+1. **Extract key claims** from the note content
+2. **Generate question-answer pairs** using the note's declarative title
+3. **Schedule the first review** for the next day
+4. **Adapt intervals** based on your responses
+
+### Example
+
+**Note**: "Active recall is more effective than passive review"
+
+**Generated flashcard**:
+- **Q**: What learning technique is more effective than passive review (re-reading, highlighting)?
+- **A**: Active recall — testing yourself on the material, even before you feel ready.
+
+## Review Flow
+
+When a flashcard is due:
+
+1. You see the **question**
+2. You attempt to recall the answer
+3. You reveal the answer and rate your recall:
+   - **Again** — Forgot completely. Reset interval to 1 day.
+   - **Hard** — Partially remembered. Interval × 1.2
+   - **Good** — Remembered correctly. Interval × 2.0
+   - **Easy** — Instant recall. Interval × 2.5
+
+## Importance and Review Priority
+
+Not all notes are equal. The importance score affects review scheduling:
+
+- **High importance (0.8+)**: Reviewed more frequently, shorter initial intervals
+- **Medium importance (0.5–0.7)**: Standard schedule
+- **Low importance (< 0.5)**: No automatic flashcard generation
+
+## Integration with Knowledge Graph
+
+Flashcards aren't isolated — they connect back to your knowledge graph:
+
+- Each flashcard links to its source note
+- Reviewing a flashcard reinforces the note's position in your memory
+- Notes that are frequently reviewed gain "memory strength" that boosts their recall ranking
+- Related notes are sometimes shown as context during review

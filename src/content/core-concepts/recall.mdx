@@ -1,0 +1,92 @@
+---
+title: Semantic Recall
+description: Ask questions in natural language and get answers grounded in your own knowledge.
+---
+
+import { Callout } from 'nextra/components'
+
+# Semantic Recall
+
+Recall is Cortex's AI-powered question-answering system. Ask a question in natural language, and Cortex retrieves relevant notes from your knowledge graph to generate an answer.
+
+## How It Works
+
+```
+Your Question
+     ↓
+┌─────────────────┐
+│  Embed query    │  ← sentence-transformers
+│  Search FTS5    │  ← full-text search
+│  Search ChromaDB│  ← semantic similarity
+│  Traverse graph │  ← follow links 1-2 hops
+└────────┬────────┘
+         ↓
+   Top-K relevant notes
+         ↓
+┌─────────────────┐
+│  Claude (Haiku) │  ← synthesize answer
+│  + your notes   │  ← grounded in YOUR knowledge
+│  as context     │
+└────────┬────────┘
+         ↓
+   Answer + source notes
+```
+
+## Three Search Strategies
+
+Cortex uses **hybrid search** combining three methods:
+
+### 1. Full-Text Search (FTS5)
+SQLite's FTS5 engine finds exact keyword and phrase matches. Fast and precise.
+
+### 2. Semantic Search (ChromaDB)
+Embedding-based search finds conceptually similar notes even when they use different words. "How do I remember things better?" matches notes about "spaced repetition" and "active recall".
+
+### 3. Graph Traversal
+After finding initial matches, Cortex walks the link graph to find related notes within 1–2 hops. This surfaces context you might not have directly asked about.
+
+## Smart Model Routing
+
+Your [pricing tier](/docs/core-concepts/tiers) determines which AI model handles your query:
+
+| Query Type | Model | When |
+|------------|-------|------|
+| Simple recall | Haiku 4.5 | Default — fast, cheap |
+| Complex synthesis | Sonnet 4 | Queries containing "synthesize", "compare", "analyze", "debate" |
+
+<Callout type="info">
+Sonnet queries count against your tier's monthly Sonnet quota. The system auto-detects complexity — you don't need to choose manually.
+</Callout>
+
+## Example Queries
+
+| Query | What Cortex Does |
+|-------|-----------------|
+| "What do I know about learning?" | Semantic search for notes about learning, memory, study techniques |
+| "Summarize my notes on React hooks" | Finds React/hooks notes and generates a synthesis |
+| "Compare my views on SQL vs NoSQL" | Escalates to Sonnet, finds both perspectives, creates a balanced comparison |
+| "What decisions have I made about architecture?" | Filters for `decision` type notes and summarizes |
+
+## Via the API
+
+```bash
+curl -X POST https://api.cortex-app.dev/api/ask \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "What do I know about spaced repetition?"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "answer": "Based on your notes, you know that spaced repetition intervals should grow exponentially (1, 3, 7, 14, 30 days), following the Ebbinghaus forgetting curve. You've also noted that interleaving practice during review sessions improves transfer learning...",
+  "sources": [
+    { "id": "note_abc", "title": "Spaced repetition intervals follow exponential growth", "similarity": 0.91 },
+    { "id": "note_def", "title": "Interleaving practice improves transfer learning", "similarity": 0.78 }
+  ],
+  "model": "claude-haiku-4-5-20251001"
+}
+```

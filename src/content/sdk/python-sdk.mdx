@@ -1,0 +1,65 @@
+---
+title: Python SDK
+description: Python client library for the Cortex API (coming soon).
+---
+
+import { Callout } from 'nextra/components'
+
+# Python SDK
+
+<Callout type="warning">
+The Python SDK is under development. Use the REST API directly for now.
+</Callout>
+
+## Planned API
+
+```python
+from cortex import CortexClient
+
+# Initialize
+client = CortexClient(
+    api_key="your-api-key",
+    base_url="https://api.cortex-app.dev"  # optional
+)
+
+# Create a note
+note = client.notes.create(
+    title="Active recall beats passive review",
+    content="Testing yourself on material produces stronger memories...",
+    note_type="fact",
+    tags=["learning", "memory"],
+    importance=0.8,
+)
+print(note.id)  # "note_abc123"
+
+# Search notes
+results = client.notes.search("learning techniques")
+for note in results:
+    print(f"{note.title} ({note.importance})")
+
+# AI recall
+answer = client.recall("What do I know about memory?")
+print(answer.text)
+print(answer.sources)  # list of source notes
+
+# Create a link
+client.links.create(
+    source_id="note_abc",
+    target_id="note_def",
+    relation="extends",
+)
+
+# Check quota
+quota = client.quota()
+print(f"Sonnet queries: {quota.sonnet_used}/{quota.sonnet_limit}")
+```
+
+## Installation (Future)
+
+```bash
+pip install cortex-sdk
+```
+
+## Contributing
+
+The SDK will be open source. Watch the [GitHub repository](https://github.com/DoctaCloak/cortex-api) for updates.

@@ -1,0 +1,73 @@
+---
+title: Managing Your Graph
+description: Keep your knowledge graph healthy with reflection, pruning, and maintenance.
+---
+
+# Managing Your Graph
+
+A knowledge graph requires periodic maintenance to stay useful. Here's how to keep yours healthy.
+
+## Weekly: Reflect
+
+The `reflect` operation analyzes your graph and returns actionable insights:
+
+```bash
+curl -X POST https://api.cortex-app.dev/api/graph/reflect \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+It returns:
+- **Clusters**: Groups of 3+ densely connected notes → Write synthesis notes
+- **Bridge notes**: Notes connecting separate clusters → These are high-value
+- **Orphans**: Unlinked notes → Connect them or consider deleting
+- **Stale notes**: Notes not accessed in 30+ days → Review or archive
+
+## Monthly: Decay and Prune
+
+Notes naturally lose relevance over time. The decay system helps:
+
+### Preview First (Dry Run)
+
+```bash
+curl -X POST https://api.cortex-app.dev/api/graph/decay \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{"dry_run": true}'
+```
+
+### Then Execute
+
+```bash
+curl -X POST https://api.cortex-app.dev/api/graph/decay \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{"dry_run": false}'
+```
+
+### Decay Resistance
+
+Some notes resist decay:
+- **Pinned notes**: Never decay
+- **Importance ≥ 0.7**: Strong resistance
+- **Recently accessed**: Resets decay timer
+- **Many links**: Well-connected notes decay slower
+
+## Quarterly: Hot Memory Regeneration
+
+Hot memory is the auto-loaded summary of your most important knowledge:
+
+```bash
+curl -X POST https://api.cortex-app.dev/api/graph/hot-memory \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{"regenerate": true}'
+```
+
+This creates a fresh summary of your highest-importance, most-accessed notes.
+
+## Graph Health Indicators
+
+| Metric | Healthy | Needs Attention |
+|--------|---------|-----------------|
+| Orphan rate | < 10% | > 25% |
+| Avg links/note | 2–4 | < 1 or > 8 |
+| Notes with importance 1.0 | < 5% | > 20% |
+| Stale notes (30+ days) | < 20% | > 50% |
+| Synthesis notes | 5–10% of total | < 1% |

@@ -1,0 +1,54 @@
+---
+title: Webhooks
+description: Receive real-time notifications when events occur in your Cortex graph (coming soon).
+---
+
+import { Callout } from 'nextra/components'
+
+# Webhooks
+
+<Callout type="warning">
+Webhooks are planned but not yet implemented. Use the [Activity Stream (SSE)](/docs/api-reference/activity) for real-time events.
+</Callout>
+
+## Planned Webhook Events
+
+| Event | Trigger |
+|-------|---------|
+| `note.created` | A new note was added |
+| `note.updated` | A note was modified |
+| `note.contested` | A note was challenged |
+| `link.created` | A new link was created |
+| `recall.query` | A recall query was executed |
+| `quota.warning` | Usage approaching limit (80%) |
+| `quota.exceeded` | Usage limit reached |
+
+## Planned Configuration
+
+```bash
+curl -X POST https://api.cortex-app.dev/api/webhooks \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://your-app.com/webhooks/cortex",
+    "events": ["note.created", "note.contested"],
+    "secret": "your-webhook-secret"
+  }'
+```
+
+## Payload Format
+
+```json
+{
+  "event": "note.created",
+  "timestamp": "2025-03-10T14:30:00Z",
+  "data": {
+    "id": "note_abc123",
+    "title": "Active recall beats passive review",
+    "note_type": "fact"
+  },
+  "signature": "sha256=..."
+}
+```
+
+Verify the signature using your webhook secret to ensure the request is from Cortex.

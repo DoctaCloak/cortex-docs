@@ -1,0 +1,89 @@
+---
+title: Knowledge Graph
+description: How your notes form an interconnected graph and what you can do with it.
+---
+
+# Knowledge Graph
+
+Your knowledge graph is the living structure that emerges from your notes and their connections. Every note is a node, every link is an edge.
+
+## Graph Properties
+
+| Metric | Description |
+|--------|-------------|
+| **Nodes** | Total notes in your graph |
+| **Edges** | Total links between notes |
+| **Density** | Edges / possible edges — higher = more interconnected |
+| **Clusters** | Groups of densely connected notes (auto-detected) |
+
+## How the Graph Grows
+
+```
+Week 1:   ○  ○  ○  ○  ○        (isolated notes)
+
+Week 4:   ○──○  ○──○──○        (some connections)
+              ╲╱
+               ○
+
+Month 3:  ○──○──○──○──○        (network emerges)
+          │╲ │╱ │╲ │ ╱│
+          ○──○──○──○──○
+          │  │╲ │  │╱ │
+          ○──○──○──○──○
+```
+
+Early on, notes are isolated islands. As you add more and link them (manually or automatically), clusters form. Eventually, your graph develops **emergent structure** — themes and connections you didn't plan.
+
+## Viewing Your Graph
+
+The **Observatory** page provides an interactive visualization:
+
+- **Force-directed layout** positions related notes closer together
+- **Color** indicates note type (facts, insights, decisions, etc.)
+- **Size** reflects importance score
+- **Edge color** shows relation type
+
+## Graph Operations
+
+### Reflect
+
+The `reflect` operation analyzes your graph for:
+
+- **Clusters** — groups of 3+ notes that are densely interconnected
+- **Bridge notes** — notes that connect otherwise separate clusters
+- **Orphans** — notes with zero links that might need connecting
+- **Synthesis opportunities** — clusters that could benefit from a summary note
+
+### Decay and Prune
+
+Over time, low-importance notes that haven't been accessed or updated lose relevance. The decay system:
+
+1. Calculates a **staleness score** based on age and last access
+2. Notes below the decay threshold are candidates for pruning
+3. **Pinned notes** and notes with importance ≥ 0.7 are decay-resistant
+4. Always run with `dry_run: true` first to preview what would be pruned
+
+## Graph Statistics API
+
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  https://api.cortex-app.dev/api/graph/stats
+```
+
+```json
+{
+  "total_notes": 954,
+  "total_links": 1081,
+  "note_types": {
+    "fact": 312,
+    "insight": 198,
+    "code_finding": 156,
+    "decision": 89,
+    "experience": 78,
+    "synthesis": 67,
+    "belief": 54
+  },
+  "avg_links_per_note": 2.27,
+  "orphan_count": 42
+}
+```

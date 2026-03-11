@@ -1,0 +1,60 @@
+---
+title: Quick Start
+description: Get up and running with Cortex in 2 minutes using the hosted version.
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Quick Start
+
+The fastest path from zero to a working knowledge graph.
+
+<Steps>
+
+### Sign in
+
+Visit [cortex-nine-bice.vercel.app](https://cortex-nine-bice.vercel.app) and sign in with GitHub.
+
+### Open the Workspace
+
+Click **Workspace** in the sidebar. This is where you create and manage notes.
+
+### Create a note
+
+Click **New Note** and fill in:
+
+- **Title**: A declarative statement (e.g., "Spaced repetition beats cramming for long-term retention")
+- **Type**: `fact`, `insight`, `decision`, `experience`, `belief`, `code_finding`, or `synthesis`
+- **Content**: One atomic idea, written in your own words
+- **Tags**: Comma-separated labels for categorization
+- **Importance**: 0.0 (trivial) to 1.0 (critical)
+
+<Callout type="warning">
+Follow the Zettelkasten rules: **one idea per note**, write in your own words, and use a declarative title (not a topic). If your note needs the word "and", split it into two notes.
+</Callout>
+
+### Ask a question
+
+Navigate to the **AI Assistant** and ask a question about your knowledge:
+
+> "What do I know about memory and learning?"
+
+Cortex will search your knowledge graph semantically and generate an answer grounded in your own notes.
+
+### Watch the activity feed
+
+The sidebar shows real-time cognitive events — note creation, auto-linking, recall queries, and model usage.
+
+</Steps>
+
+## What Just Happened?
+
+When you created that note, Cortex:
+
+1. **Stored it** in your personal SQLite database
+2. **Embedded it** using sentence-transformers for semantic search
+3. **Scanned for links** — if any existing notes are semantically similar, they're automatically linked
+4. **Indexed it** for full-text search via FTS5
+5. **Emitted an activity event** via Server-Sent Events to your dashboard
+
+Your knowledge graph is alive. Every note you add makes it smarter.

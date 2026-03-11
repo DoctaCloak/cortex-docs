@@ -1,0 +1,94 @@
+---
+title: API Reference
+description: Complete API reference for the Cortex backend.
+---
+
+# API Reference
+
+The Cortex API is a RESTful JSON API built with FastAPI. All authenticated endpoints require a `Bearer` token.
+
+## Base URL
+
+```
+Production:  https://api.cortex-app.dev
+Local:       http://localhost:8000
+```
+
+## Authentication
+
+```bash
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  https://api.cortex-app.dev/api/...
+```
+
+## Response Format
+
+All responses return JSON. Successful responses return the data directly. Errors return:
+
+```json
+{
+  "detail": "Error description"
+}
+```
+
+## HTTP Status Codes
+
+| Code | Meaning |
+|------|---------|
+| `200` | Success |
+| `201` | Created |
+| `400` | Bad request — check your payload |
+| `401` | Unauthorized — invalid or missing token |
+| `403` | Forbidden — insufficient tier |
+| `404` | Not found |
+| `429` | Rate limited — quota exceeded |
+| `500` | Server error |
+
+## Endpoints Overview
+
+### Public (No Auth)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/health` | Health check |
+| `GET` | `/api/pricing` | Tier pricing info |
+| `GET` | `/api/demo/graph` | Demo graph data |
+| `POST` | `/api/demo/ask` | Demo AI query |
+
+### Notes
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/workspace/notes` | [Create a note](/docs/api-reference/notes#create) |
+| `PUT` | `/api/workspace/notes/:id` | [Update a note](/docs/api-reference/notes#update) |
+| `GET` | `/api/graph/notes` | [List/search notes](/docs/api-reference/notes#list) |
+
+### Links
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/workspace/links` | [Create a link](/docs/api-reference/links#create) |
+
+### Recall
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/ask` | [AI-powered recall query](/docs/api-reference/recall#ask) |
+
+### Graph
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/graph/stats` | [Graph statistics](/docs/api-reference/graph#stats) |
+
+### Activity
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/activity/stream` | [SSE event stream](/docs/api-reference/activity#stream) |
+
+### Quota
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/quota` | [Usage quota](/docs/api-reference/quota#get) |

@@ -1,0 +1,81 @@
+---
+title: Backend Architecture
+description: FastAPI backend structure, middleware, and request flow.
+---
+
+# Backend Architecture
+
+The backend is a single FastAPI application in `main.py` with middleware for authentication, CORS, and tier enforcement.
+
+## Request Flow
+
+```
+Incoming Request
+     ↓
+CORS Middleware (origin check)
+     ↓
+Auth Middleware (JWT decode → request.state.identity)
+     ↓
+Route Handler
+     ↓
+ZettelStore / ChromaDB / Anthropic API
+     ↓
+Response + emit_activity()
+```
+
+## Key Components
+
+### ZettelStore
+
+The `ZettelStore` class manages all SQLite operations:
+
+- `insert_note()` — Creates a note with FTS5 indexing
+- `update_note()` — Modifies an existing note
+- `search_fts()` — Full-text search via FTS5
+- `get_note()` — Retrieve a single note with its graph neighborhood
+- `link_notes()` — Create a link between two notes
+
+### ChromaDB Integration
+
+Sentence-transformers encode notes into vector embeddings stored in ChromaDB:
+
+- `all-MiniLM-L6-v2` model (~80MB, fast inference)
+- Cosine similarity for semantic search
+- Auto-linking threshold: similarity > 0.75
+
+### Model Routing
+
+```python
+def select_model_for_query(query: str, tier: str) -> str:
+    COMPLEX_KEYWORDS = [
+        "synthesize", "compare", "analyze", "debate",
+        "contrast", "evaluate", "summarize all"
+    ]
+    if any(kw in query.lower() for kw in COMPLEX_KEYWORDS):
+        if tier_allows_sonnet(tier):
+            return "claude-sonnet-4-20250514"
+    return "claude-haiku-4-5-20251001"
+```
+
+### Activity Emission
+
+```python
+async def emit_activity(user_id: str, event_type: str, data: dict):
+    event = {
+        "type": event_type,
+        "data": data,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    if user_id in _activity_subscribers:
+        await _activity_subscribers[user_id].put(event)
+```
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ANTHROPIC_API_KEY` | Yes | Anthropic API key |
+| `JWT_SECRET` | Yes | Secret for JWT signing/verification |
+| `CORS_ORIGINS` | No | Comma-separated allowed origins |
+| `DATABASE_URL` | No | SQLite path (default: `cortex.db`) |
+| `CHROMA_PERSIST_DIR` | No | ChromaDB storage path |

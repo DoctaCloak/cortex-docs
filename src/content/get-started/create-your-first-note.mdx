@@ -1,0 +1,93 @@
+---
+title: Create Your First Note
+description: Learn how to create atomic Zettelkasten notes in Cortex.
+---
+
+import { Callout } from 'nextra/components'
+
+# Create Your First Note
+
+Notes are the building blocks of your knowledge graph. Each note captures **one atomic idea**.
+
+## Anatomy of a Note
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| `title` | A declarative statement | "Active recall is more effective than passive review" |
+| `content` | The full explanation in your own words | "Studies show that testing yourself..." |
+| `note_type` | Category of knowledge | `fact`, `insight`, `decision`, `experience` |
+| `tags` | Comma-separated labels | `learning, memory, study-techniques` |
+| `importance` | Priority weight (0.0–1.0) | `0.8` |
+
+## Note Types
+
+- **fact** — Something objectively true. Evidence-backed.
+- **insight** — A connection or realization you've made.
+- **decision** — A choice you made and why.
+- **experience** — Something you observed or went through.
+- **belief** — A working hypothesis. May be contested later.
+- **code_finding** — A technical discovery about code or systems.
+- **synthesis** — A higher-order note that combines multiple ideas.
+
+## Good vs Bad Notes
+
+### Good Note
+
+> **Title**: "Interleaving practice improves transfer learning"
+>
+> **Content**: "Mixing different problem types during practice (interleaving) produces better long-term learning than blocked practice, even though blocked practice feels more productive in the moment. This is because interleaving forces the brain to discriminate between strategies."
+>
+> **Type**: fact | **Tags**: learning, practice, memory
+
+### Bad Note
+
+> **Title**: "Learning"
+>
+> **Content**: "There are many ways to learn. Some are better than others. Spaced repetition is good. Active recall is good. Interleaving is good."
+
+<Callout type="error">
+This note violates every Zettelkasten principle: vague title (topic, not claim), multiple ideas crammed together, and no original thinking.
+</Callout>
+
+## Via the API
+
+```bash
+curl -X POST https://api.cortex-app.dev/api/workspace/notes \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Interleaving practice improves transfer learning",
+    "content": "Mixing different problem types during practice (interleaving) produces better long-term learning than blocked practice, even though blocked practice feels more productive in the moment.",
+    "note_type": "fact",
+    "tags": ["learning", "practice", "memory"],
+    "importance": 0.7
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "id": "note_a1b2c3d4",
+  "title": "Interleaving practice improves transfer learning",
+  "note_type": "fact",
+  "state": "active",
+  "created_at": "2025-03-10T14:30:00Z",
+  "auto_links": [
+    {
+      "target_id": "note_e5f6g7h8",
+      "target_title": "Spaced repetition beats cramming for long-term retention",
+      "relation": "relates_to",
+      "similarity": 0.82
+    }
+  ]
+}
+```
+
+Notice how Cortex automatically found a related note and linked them.
+
+## What's Next?
+
+- Learn about [note linking](/docs/core-concepts/linking) and how your knowledge graph grows
+- Understand [semantic recall](/docs/core-concepts/recall) — querying your knowledge in natural language
+- Explore [spaced repetition](/docs/core-concepts/spaced-repetition) — how Cortex helps you remember

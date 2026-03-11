@@ -1,0 +1,37 @@
+---
+title: Voice Responses
+description: Enable spoken AI responses using ElevenLabs text-to-speech.
+---
+
+import { Callout } from 'nextra/components'
+
+# Voice Responses
+
+Cortex can speak AI responses aloud using ElevenLabs text-to-speech. This is useful for hands-free review sessions, accessibility, or when you prefer listening to reading.
+
+<Callout type="info">
+Voice responses are available on Student ($5/mo) and above. See [Pricing Tiers](/docs/core-concepts/tiers) for quotas.
+</Callout>
+
+## Enabling Voice
+
+In the AI Assistant, toggle the voice icon to enable spoken responses. The AI will both display text and read the response aloud.
+
+## Voice Models
+
+| Model | Latency | Quality | Cost |
+|-------|---------|---------|------|
+| Flash | ~200ms | Good | $0.08/1K chars |
+| Turbo | ~300ms | Better | $0.11/1K chars |
+
+Cortex uses **Flash** by default for speed. Turbo is used for longer, synthesized responses where quality matters more.
+
+## Usage Tracking
+
+Voice responses count against your monthly quota:
+
+- **Student**: 15 voice responses/month
+- **Pro**: 60 voice responses/month
+- **Power**: 200 voice responses/month
+
+Check your remaining quota on the dashboard or via the `/api/quota` endpoint.

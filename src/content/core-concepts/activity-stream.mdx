@@ -1,0 +1,96 @@
+---
+title: Activity Stream
+description: Real-time Server-Sent Events for cognitive activity in Cortex.
+---
+
+# Activity Stream
+
+The activity stream provides **real-time visibility** into what's happening in your knowledge graph via Server-Sent Events (SSE).
+
+## Event Types
+
+| Event | Trigger |
+|-------|---------|
+| `note_created` | A new note was added |
+| `note_updated` | A note was modified |
+| `note_linked` | An auto-link was discovered |
+| `note_contested` | A note's claims were challenged |
+| `recall_query` | A semantic recall query was made |
+| `recall_result` | Notes were retrieved for a query |
+| `model_used` | An AI model was invoked |
+| `flashcard_due` | A flashcard is ready for review |
+| `flashcard_reviewed` | A flashcard was reviewed |
+| `debate_started` | A RUMAD debate was initiated |
+| `debate_round` | A debate round completed |
+| `debate_concluded` | A debate reached conclusion |
+
+## Connecting to the Stream
+
+### JavaScript (Browser)
+
+```javascript
+const token = 'YOUR_JWT_TOKEN';
+const es = new EventSource(
+  `https://api.cortex-app.dev/api/activity/stream?token=${encodeURIComponent(token)}`
+);
+
+es.addEventListener('note_created', (e) => {
+  const data = JSON.parse(e.data);
+  console.log('New note:', data.title);
+});
+
+es.addEventListener('recall_query', (e) => {
+  const data = JSON.parse(e.data);
+  console.log('Query:', data.query);
+});
+
+es.onerror = () => {
+  console.log('Disconnected, reconnecting in 5s...');
+  // EventSource auto-reconnects, or handle manually
+};
+```
+
+### React Hook
+
+Cortex provides a `useActivityStream` hook:
+
+```tsx
+import { useActivityStream } from '@/hooks/useActivityStream';
+
+function ActivityPanel() {
+  const { events, connected, clearEvents } = useActivityStream(
+    process.env.NEXT_PUBLIC_API_URL,
+    session?.accessToken
+  );
+
+  return (
+    <div>
+      <div className={connected ? 'text-green-500' : 'text-red-500'}>
+        {connected ? 'Connected' : 'Disconnected'}
+      </div>
+      {events.map((event, i) => (
+        <div key={i}>{event.type}: {JSON.stringify(event.data)}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Architecture
+
+The SSE endpoint uses per-user subscriber queues:
+
+```
+User Action → emit_activity(user_id, event)
+                    ↓
+            asyncio.Queue (per user)
+                    ↓
+            GET /api/activity/stream
+                    ↓
+            SSE push to browser
+```
+
+- Keepalive pings every 30 seconds
+- Auto-reconnect on disconnect (5-second delay)
+- Events are buffered (up to 50 per user)
+- Token passed as query parameter (EventSource doesn't support headers)

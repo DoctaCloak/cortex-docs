@@ -1,0 +1,66 @@
+---
+title: Using the AI Assistant
+description: How to get the most out of Cortex's AI-powered recall and synthesis.
+---
+
+# Using the AI Assistant
+
+The AI assistant answers questions using your knowledge graph as context. It's not a general chatbot — it's **your knowledge**, amplified.
+
+## Effective Queries
+
+### Be Specific
+
+| Weak | Strong |
+|------|--------|
+| "Tell me about learning" | "What techniques for improving long-term retention have I noted?" |
+| "Help with React" | "What patterns have I documented for managing React state?" |
+| "What do I know?" | "Summarize my notes on database optimization from the last month" |
+
+### Trigger Synthesis
+
+Use keywords that activate Sonnet for deeper analysis:
+
+- "**Synthesize** my notes on X"
+- "**Compare** my understanding of X vs Y"
+- "**Analyze** the trade-offs I've documented for X"
+- "**Evaluate** my decision to use X"
+
+### Ask About Connections
+
+- "How do my notes on memory relate to my notes on teaching?"
+- "What patterns emerge from my engineering decisions?"
+- "Are there contradictions in my notes about nutrition?"
+
+## What the AI Can Do
+
+- **Recall**: Find and surface relevant notes
+- **Synthesize**: Combine multiple notes into a coherent summary
+- **Compare**: Identify similarities and differences between note clusters
+- **Challenge**: Point out potential contradictions or gaps
+- **Generate flashcards**: Create review questions from notes
+
+## What the AI Cannot Do
+
+- Access the internet or external sources
+- Create notes on your behalf (you must write them)
+- Override your notes — it always cites your content as the source of truth
+- Access other users' knowledge graphs
+
+## Understanding Source Citations
+
+Every AI response includes source notes:
+
+```json
+{
+  "answer": "Based on your notes...",
+  "sources": [
+    { "id": "note_abc", "title": "...", "similarity": 0.91 },
+    { "id": "note_def", "title": "...", "similarity": 0.78 }
+  ]
+}
+```
+
+- **similarity > 0.85**: Strong match — the note directly addresses your question
+- **similarity 0.70–0.85**: Related context — pulled in via graph traversal
+- **similarity < 0.70**: Tangentially relevant — may or may not be useful

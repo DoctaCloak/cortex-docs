@@ -1,0 +1,83 @@
+---
+title: Zettelkasten Method
+description: How Cortex implements the Zettelkasten note-taking system for atomic knowledge management.
+---
+
+import { Callout } from 'nextra/components'
+
+# Zettelkasten Method
+
+The Zettelkasten ("slip box") is a knowledge management system developed by German sociologist **Niklas Luhmann**, who used it to write over 70 books and 400 academic papers. Cortex adapts this method for the digital age, adding AI-powered linking and semantic search.
+
+## The Three Rules
+
+### 1. One Idea Per Note (Atomicity)
+
+Each note should contain exactly one idea. If you find yourself writing "and" to connect two thoughts, split them into two notes.
+
+<Callout type="warning">
+**Test**: Can you summarize this note in a single sentence? If not, it's not atomic enough.
+</Callout>
+
+### 2. Write In Your Own Words (Elaboration)
+
+Never copy-paste. Rewriting forces you to process the information, which dramatically improves understanding and retention. This is backed by research on the **generation effect** — information you generate yourself is remembered better than information you passively read.
+
+### 3. Declarative Titles (Findability)
+
+Titles should be claims, not topics.
+
+| Bad Title | Good Title |
+|-----------|------------|
+| "Spaced repetition" | "Spaced repetition intervals should grow exponentially" |
+| "React hooks" | "useEffect cleanup runs before every re-execution, not just on unmount" |
+| "Meeting notes" | "Team decided to use SQLite over Postgres for embedded deployment" |
+
+## Note Types in Cortex
+
+Cortex extends the classic Zettelkasten with typed notes:
+
+| Type | Purpose | Example |
+|------|---------|---------|
+| **fact** | Objectively verified information | "SQLite supports up to 281 TB databases" |
+| **insight** | A connection you've made | "Zettelkasten linking is similar to how neurons form synapses" |
+| **decision** | A choice and its rationale | "Chose Haiku over Sonnet as default model for cost efficiency" |
+| **experience** | Something you observed | "Users abandoned the app when onboarding took > 30 seconds" |
+| **belief** | A working hypothesis | "I believe graph-based search outperforms vector-only search" |
+| **code_finding** | Technical discovery | "FastAPI's `Depends()` creates a new instance per request" |
+| **synthesis** | Higher-order note combining others | "Three patterns emerge from my notes on learning: ..." |
+
+## Note States
+
+Notes in Cortex have lifecycle states:
+
+- **active** — Default state. The note is live and searchable.
+- **contested** — Another note or the AI has challenged this note's claims. Needs review.
+- **verified** — Manually confirmed as accurate.
+- **archived** — Removed from active search but preserved.
+
+## The Importance Score
+
+Every note has an `importance` score from 0.0 to 1.0:
+
+- **0.9–1.0**: Critical, foundational knowledge. Should never be forgotten.
+- **0.7–0.8**: Important findings and decisions.
+- **0.5–0.6**: Standard notes.
+- **0.3–0.4**: Minor observations.
+- **0.0–0.2**: Low-priority, may be pruned over time.
+
+Importance affects:
+- **Recall ranking** — Higher-importance notes surface first in search results
+- **Decay resistance** — Important notes decay slower during pruning
+- **Flashcard priority** — More important notes are reviewed more frequently
+
+## Building Your Zettelkasten
+
+Start small. Don't try to import thousands of notes at once. Instead:
+
+1. **Read something** — an article, a book chapter, a talk
+2. **Write 3–5 atomic notes** capturing the key ideas in your own words
+3. **Link them** to existing notes (Cortex does this automatically, but review the links)
+4. **Revisit weekly** — use `reflect` to find clusters and write synthesis notes
+
+After a month, you'll have a knowledge graph that genuinely reflects how you think. After a year, it becomes an intellectual partner.

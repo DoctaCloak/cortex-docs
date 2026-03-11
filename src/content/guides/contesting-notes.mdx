@@ -1,0 +1,49 @@
+---
+title: Contesting Notes
+description: How to challenge and verify knowledge in your graph.
+---
+
+# Contesting Notes
+
+Not everything you write will be correct forever. Cortex supports **contesting** — a mechanism for challenging notes when new information emerges.
+
+## Why Contest?
+
+- You learned something that contradicts an existing note
+- A belief turned out to be wrong
+- New evidence supersedes old conclusions
+- A decision should be revisited
+
+## How to Contest
+
+```bash
+curl -X POST https://api.cortex-app.dev/api/graph/contest \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{
+    "note_id": "note_abc",
+    "reason": "New research shows this is only true for adults, not children",
+    "challenger_note_id": "note_xyz"
+  }'
+```
+
+This:
+1. Sets the original note's state to `contested`
+2. Creates a `contradicts` link between the two notes
+3. Emits a `note_contested` activity event
+4. Surfaces the contested note for review
+
+## Resolving Contests
+
+After reviewing a contested note, you can:
+
+- **Update the original note** with corrected information
+- **Archive it** and keep the challenger as the new truth
+- **Create a synthesis note** that reconciles both perspectives
+- **Reject the contest** and restore the note to `active`
+
+## Contested Notes in Search
+
+Contested notes are still searchable but:
+- Displayed with a `contested` badge
+- Ranked lower in recall results
+- Flagged when cited by the AI assistant

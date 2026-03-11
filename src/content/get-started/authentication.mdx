@@ -1,0 +1,71 @@
+---
+title: Authentication
+description: How authentication works in Cortex — JWT tokens, GitHub OAuth, and API keys.
+---
+
+import { Callout } from 'nextra/components'
+
+# Authentication
+
+Cortex uses **JWT (JSON Web Tokens)** for API authentication and **GitHub OAuth** for the web dashboard.
+
+## Web Dashboard
+
+The frontend uses [NextAuth.js](https://next-auth.js.org/) with GitHub as the OAuth provider. When you sign in:
+
+1. You're redirected to GitHub for authorization
+2. GitHub returns an OAuth token
+3. NextAuth creates a session and JWT
+4. The JWT is sent to the backend with every API request
+
+No passwords are stored. Your GitHub identity is your Cortex identity.
+
+## API Authentication
+
+All authenticated endpoints require a `Bearer` token in the `Authorization` header:
+
+```bash
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  https://api.cortex-app.dev/api/workspace/notes
+```
+
+### Getting a Token
+
+<Callout type="info">
+API key generation is coming soon. For now, tokens are issued through the OAuth flow.
+</Callout>
+
+## Public Endpoints
+
+These endpoints require no authentication:
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /health` | Health check |
+| `GET /api/demo/graph` | Demo graph data |
+| `GET /api/demo/ask` | Demo AI query |
+| `GET /api/pricing` | Tier pricing info |
+
+## Authenticated Endpoints
+
+These endpoints require a valid JWT:
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /api/workspace/notes` | Create a note |
+| `PUT /api/workspace/notes/:id` | Update a note |
+| `GET /api/graph/notes` | List all notes |
+| `POST /api/ask` | AI-powered recall query |
+| `GET /api/activity/stream` | SSE activity stream |
+| `GET /api/quota` | Usage quota info |
+
+## Rate Limits
+
+Rate limits are determined by your [pricing tier](/docs/core-concepts/tiers):
+
+| Tier | Queries/Month | Sonnet Queries | Voice Responses |
+|------|---------------|----------------|-----------------|
+| Free | 50 | 0 | 0 |
+| Student ($5) | Unlimited | 20 | 15 |
+| Pro ($12) | Unlimited | 100 | 60 |
+| Power ($30) | Unlimited | Unlimited | 200 |

@@ -1,0 +1,54 @@
+---
+title: Activity Stream API
+description: Real-time Server-Sent Events endpoint for cognitive activity.
+---
+
+# Activity Stream API
+
+## SSE Event Stream
+
+```http
+GET /api/activity/stream?token=YOUR_TOKEN
+```
+
+This is a **Server-Sent Events (SSE)** endpoint. It keeps a persistent connection open and pushes events as they occur.
+
+### Authentication
+
+EventSource doesn't support custom headers. Pass the token as a query parameter:
+
+```javascript
+const es = new EventSource(
+  `https://api.cortex-app.dev/api/activity/stream?token=${token}`
+);
+```
+
+### Event Types
+
+```
+event: connected
+data: {"message": "Connected to activity stream"}
+
+event: note_created
+data: {"type": "note_created", "data": {"title": "...", "note_type": "fact"}, "timestamp": "2025-03-10T14:30:00Z"}
+
+event: note_linked
+data: {"type": "note_linked", "data": {"source": "...", "target": "...", "relation": "relates_to"}, "timestamp": "..."}
+
+event: recall_query
+data: {"type": "recall_query", "data": {"query": "What do I know about..."}, "timestamp": "..."}
+
+event: model_used
+data: {"type": "model_used", "data": {"model": "claude-haiku-4-5-20251001"}, "timestamp": "..."}
+
+event: ping
+data: {}
+```
+
+### Keepalive
+
+The server sends a `ping` event every 30 seconds to keep the connection alive.
+
+### Reconnection
+
+If the connection drops, EventSource will automatically reconnect. The recommended manual reconnection delay is 5 seconds.

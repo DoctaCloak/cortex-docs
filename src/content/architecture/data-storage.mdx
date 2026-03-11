@@ -1,0 +1,83 @@
+---
+title: Data Storage
+description: SQLite, ChromaDB, and Litestream replication architecture.
+---
+
+import { Callout } from 'nextra/components'
+
+# Data Storage
+
+Cortex uses a layered storage architecture optimized for simplicity and reliability.
+
+## SQLite + FTS5
+
+The primary data store is SQLite with FTS5 for full-text search:
+
+- **Notes table**: id, title, content, note_type, tags, importance, state, timestamps
+- **Links table**: source_id, target_id, relation, timestamps
+- **FTS5 index**: Full-text search over title and content
+
+SQLite was chosen over Postgres for:
+- Zero infrastructure (embedded database)
+- Excellent read performance
+- Simple backups and migration
+- WAL mode for concurrent reads
+
+<Callout type="warning">
+SQLite serializes writes. This is fine for single-user or low-write workloads. If you need high write throughput, consider Postgres.
+</Callout>
+
+## ChromaDB
+
+Vector embeddings for semantic search:
+
+- **Model**: `all-MiniLM-L6-v2` (384-dimensional embeddings)
+- **Storage**: Persistent on disk (`./chroma_data/`)
+- **Usage**: Semantic similarity search, auto-linking, recall queries
+
+ChromaDB runs in-process — no separate service needed.
+
+## Litestream Replication
+
+[Litestream](https://litestream.io/) provides continuous replication of the SQLite database to S3-compatible storage:
+
+```
+SQLite WAL changes → Litestream → Cloudflare R2 bucket
+```
+
+### Configuration
+
+```yaml filename="litestream.yml"
+dbs:
+  - path: /app/data/cortex.db
+    replicas:
+      - type: s3
+        endpoint: https://ACCOUNT_ID.r2.cloudflarestorage.com
+        bucket: cortex-backup
+        access-key-id: ${R2_ACCESS_KEY}
+        secret-access-key: ${R2_SECRET_KEY}
+```
+
+### Recovery
+
+On container start, the `entrypoint.sh` conditionally restores from backup:
+
+```bash
+if [ ! -f "$DB_PATH" ] || [ ! -s "$DB_PATH" ]; then
+  litestream restore -config "$LITESTREAM_CONFIG" "$DB_PATH"
+fi
+```
+
+This ensures data survives container restarts without overwriting existing local data.
+
+## Data Flow
+
+```
+User creates note
+     ↓
+FastAPI handler
+     ├── ZettelStore.insert_note() → SQLite
+     ├── ChromaDB.add() → Vector embedding
+     ├── Auto-link scan → SQLite (new links)
+     └── emit_activity() → SSE stream
+```

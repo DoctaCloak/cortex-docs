@@ -1,0 +1,81 @@
+---
+title: Quota & Pricing API
+description: Check usage quotas and retrieve pricing tier information.
+---
+
+# Quota & Pricing API
+
+## Get Usage Quota
+
+```http
+GET /api/quota
+Authorization: Bearer TOKEN
+```
+
+### Response `200`
+
+```json
+{
+  "tier": "student",
+  "queries_used": 142,
+  "queries_limit": -1,
+  "sonnet_queries_used": 8,
+  "sonnet_queries_limit": 20,
+  "voice_used": 3,
+  "voice_limit": 15,
+  "resets_at": "2025-04-01T00:00:00Z"
+}
+```
+
+A limit of `-1` means unlimited.
+
+---
+
+## Get Pricing Tiers
+
+```http
+GET /api/pricing
+```
+
+No authentication required.
+
+### Response `200`
+
+```json
+{
+  "tiers": {
+    "free": {
+      "queries_per_month": 50,
+      "sonnet_queries_per_month": 0,
+      "voice_responses_per_month": 0,
+      "default_model": "claude-haiku-4-5-20251001",
+      "max_tokens": 400,
+      "price_monthly": 0
+    },
+    "student": {
+      "queries_per_month": -1,
+      "sonnet_queries_per_month": 20,
+      "voice_responses_per_month": 15,
+      "default_model": "claude-haiku-4-5-20251001",
+      "max_tokens": 600,
+      "price_monthly": 5
+    },
+    "pro": {
+      "queries_per_month": -1,
+      "sonnet_queries_per_month": 100,
+      "voice_responses_per_month": 60,
+      "default_model": "claude-haiku-4-5-20251001",
+      "max_tokens": 800,
+      "price_monthly": 12
+    },
+    "agent": {
+      "queries_per_month": -1,
+      "sonnet_queries_per_month": -1,
+      "voice_responses_per_month": 200,
+      "default_model": "claude-haiku-4-5-20251001",
+      "max_tokens": 1200,
+      "price_monthly": 30
+    }
+  }
+}
+```

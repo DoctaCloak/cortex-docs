@@ -1,0 +1,54 @@
+---
+title: Architecture
+description: Technical architecture of the Cortex knowledge management system.
+---
+
+# Architecture
+
+Cortex is a three-tier application with a clear separation between frontend, backend, and storage.
+
+## System Diagram
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                      Frontend                            │
+│   Next.js 15 · App Router · Tailwind CSS · Redux        │
+│   Vercel (Production) · localhost:3000 (Dev)             │
+└────────────────────────┬────────────────────────────────┘
+                         │ HTTPS / SSE
+┌────────────────────────┴────────────────────────────────┐
+│                      Backend                             │
+│   FastAPI · Python 3.12 · Uvicorn                       │
+│   Railway (Production) · localhost:8000 (Dev)            │
+├─────────────┬──────────────┬────────────────────────────┤
+│  ZettelStore │   ChromaDB   │   Anthropic API            │
+│  (SQLite +   │   (Vector    │   (Claude Haiku/Sonnet)    │
+│   FTS5)      │   Embeddings)│                            │
+│              │   sentence-  │   ElevenLabs API           │
+│              │   transformers│   (TTS, optional)         │
+└──────┬───────┴──────────────┴────────────────────────────┘
+       │
+┌──────┴───────┐
+│  Litestream  │  → Cloudflare R2 (continuous replication)
+└──────────────┘
+```
+
+## Repositories
+
+| Repo | Purpose | Deploy |
+|------|---------|--------|
+| `cortex` | Frontend (Next.js) | Vercel |
+| `cortex-api` | Backend (FastAPI) | Railway |
+| `cortex-docs` | Documentation (Nextra) | Vercel |
+
+## Key Design Decisions
+
+1. **SQLite over Postgres** — Simpler deployment, zero infrastructure. Litestream provides durability via continuous replication to S3-compatible storage.
+
+2. **ChromaDB for embeddings** — Embedded vector database. No separate service to manage.
+
+3. **Haiku by default** — Cost efficiency. Most queries don't need Sonnet's reasoning power. Auto-escalation handles the exceptions.
+
+4. **SSE over WebSockets** — Simpler, works through more proxies, sufficient for one-way event streaming.
+
+5. **JWT over sessions** — Stateless authentication. No server-side session store needed.

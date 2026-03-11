@@ -1,0 +1,81 @@
+---
+title: JavaScript SDK
+description: JavaScript/TypeScript client library for the Cortex API (coming soon).
+---
+
+import { Callout } from 'nextra/components'
+
+# JavaScript SDK
+
+<Callout type="warning">
+The JavaScript SDK is under development. Use the REST API directly for now.
+</Callout>
+
+## Planned API
+
+```typescript
+import { Cortex } from '@cortex/sdk';
+
+// Initialize
+const cortex = new Cortex({
+  apiKey: 'your-api-key',
+  baseUrl: 'https://api.cortex-app.dev', // optional
+});
+
+// Create a note
+const note = await cortex.notes.create({
+  title: 'Active recall beats passive review',
+  content: 'Testing yourself on material produces stronger memories...',
+  noteType: 'fact',
+  tags: ['learning', 'memory'],
+  importance: 0.8,
+});
+console.log(note.id); // "note_abc123"
+
+// Search notes
+const results = await cortex.notes.search('learning techniques');
+results.forEach(n => console.log(`${n.title} (${n.importance})`));
+
+// AI recall
+const answer = await cortex.recall('What do I know about memory?');
+console.log(answer.text);
+console.log(answer.sources);
+
+// Activity stream (SSE)
+const stream = cortex.activity.stream();
+stream.on('note_created', (event) => {
+  console.log('New note:', event.data.title);
+});
+stream.on('error', () => stream.reconnect());
+
+// Check quota
+const quota = await cortex.quota();
+console.log(`Sonnet: ${quota.sonnetUsed}/${quota.sonnetLimit}`);
+```
+
+## Installation (Future)
+
+```bash
+npm install @cortex/sdk
+```
+
+## TypeScript Support
+
+The SDK will ship with full TypeScript types:
+
+```typescript
+interface Note {
+  id: string;
+  title: string;
+  content: string;
+  noteType: NoteType;
+  tags: string[];
+  importance: number;
+  state: NoteState;
+  createdAt: string;
+  updatedAt: string;
+}
+
+type NoteType = 'fact' | 'insight' | 'decision' | 'experience' | 'belief' | 'code_finding' | 'synthesis';
+type NoteState = 'active' | 'contested' | 'verified' | 'archived';
+```

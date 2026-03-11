@@ -1,0 +1,138 @@
+---
+title: Self-Hosting
+description: Deploy Cortex on your own infrastructure.
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Self-Hosting
+
+Run Cortex on your own servers for full data sovereignty.
+
+## Requirements
+
+- Linux server (Ubuntu 22.04+ recommended) or macOS
+- Python 3.11+
+- Node.js 18+
+- 2 GB RAM minimum (4 GB recommended for embedding model)
+- An Anthropic API key
+
+## Docker Deployment (Recommended)
+
+<Steps>
+
+### Clone both repos
+
+```bash
+git clone https://github.com/DoctaCloak/cortex-api.git
+git clone https://github.com/DoctaCloak/cortex.git
+```
+
+### Create environment file
+
+```env filename=".env"
+ANTHROPIC_API_KEY=sk-ant-...
+JWT_SECRET=$(openssl rand -hex 32)
+CORS_ORIGINS=https://your-domain.com
+NEXTAUTH_URL=https://your-domain.com
+NEXTAUTH_SECRET=$(openssl rand -hex 32)
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+```
+
+### Deploy with Docker Compose
+
+```yaml filename="docker-compose.yml"
+version: '3.8'
+
+services:
+  backend:
+    build: ./cortex-api
+    ports:
+      - "8000:8000"
+    env_file: .env
+    volumes:
+      - cortex-data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build: ./cortex
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    env_file: .env
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  cortex-data:
+```
+
+```bash
+docker-compose up -d
+```
+
+</Steps>
+
+## Reverse Proxy (Nginx)
+
+```nginx filename="/etc/nginx/sites-available/cortex"
+server {
+    listen 443 ssl;
+    server_name cortex.your-domain.com;
+
+    ssl_certificate /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location /api/ {
+        proxy_pass http://localhost:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        # SSE support
+        proxy_set_header Connection '';
+        proxy_http_version 1.1;
+        chunked_transfer_encoding off;
+        proxy_buffering off;
+        proxy_cache off;
+    }
+}
+```
+
+## Backup Strategy
+
+### Option 1: Litestream (Recommended)
+
+Continuous replication to any S3-compatible storage:
+
+```bash
+# Install Litestream
+curl -fsSL https://github.com/benbjohnson/litestream/releases/latest/download/litestream-linux-amd64.tar.gz | tar xz
+sudo mv litestream /usr/local/bin/
+```
+
+### Option 2: Periodic Snapshots
+
+```bash
+# Cron job for daily backups
+0 3 * * * sqlite3 /app/data/cortex.db ".backup /backups/cortex-$(date +\%Y\%m\%d).db"
+```
+
+<Callout type="warning">
+Always back up your data. SQLite databases can be corrupted by hardware failures or unsafe shutdowns. Litestream provides continuous protection.
+</Callout>
+
+## Security Considerations
+
+- **Always use HTTPS** in production
+- **Rotate JWT secrets** periodically
+- **Restrict CORS origins** to your frontend domain only
+- **Keep API keys secure** — never commit them to version control
+- **Update dependencies** regularly for security patches

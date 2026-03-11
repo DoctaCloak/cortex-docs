@@ -1,0 +1,82 @@
+---
+title: Pricing Tiers
+description: Cortex pricing tiers — what each plan includes and how usage is metered.
+---
+
+import { Callout } from 'nextra/components'
+
+# Pricing Tiers
+
+Cortex uses a tier-based pricing model designed to be affordable for students while covering AI and infrastructure costs.
+
+## Plans
+
+| Feature | Free | Student ($5/mo) | Pro ($12/mo) | Power ($30/mo) |
+|---------|------|-----------------|--------------|----------------|
+| Queries/month | 50 | Unlimited | Unlimited | Unlimited |
+| Sonnet queries | 0 | 20 | 100 | Unlimited |
+| Voice responses | 0 | 15 | 60 | 200 |
+| Default model | Haiku 4.5 | Haiku 4.5 | Haiku 4.5 | Haiku 4.5 |
+| Max tokens/response | 400 | 600 | 800 | 1,200 |
+| Notes | 100 | Unlimited | Unlimited | Unlimited |
+| Spaced repetition | Basic | Full | Full | Full |
+
+## How Costs Break Down
+
+### AI Queries (Anthropic)
+
+| Model | Input Cost | Output Cost | Avg Query Cost |
+|-------|-----------|-------------|----------------|
+| Haiku 4.5 | $1/MTok | $5/MTok | ~$0.005 |
+| Sonnet 4 | $3/MTok | $15/MTok | ~$0.02 |
+
+Most queries use **Haiku** by default. Sonnet is auto-selected only for complex operations (synthesis, comparison, analysis).
+
+### Voice Responses (ElevenLabs)
+
+| Plan | Cost per 1K characters | Avg response cost |
+|------|----------------------|-------------------|
+| Flash | $0.08/1K chars | ~$0.04/response |
+| Turbo | $0.11/1K chars | ~$0.055/response |
+
+<Callout type="info">
+Voice is optional. Text responses are always available on all tiers.
+</Callout>
+
+## Smart Model Routing
+
+Cortex automatically selects the right model for each query:
+
+```python
+# Queries auto-escalated to Sonnet:
+COMPLEX_KEYWORDS = [
+    "synthesize", "compare", "analyze", "debate",
+    "contrast", "evaluate", "summarize all"
+]
+
+# Everything else uses Haiku
+```
+
+You don't need to choose — the system detects complexity and routes appropriately.
+
+## Checking Your Usage
+
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  https://api.cortex-app.dev/api/quota
+```
+
+```json
+{
+  "tier": "student",
+  "queries_used": 142,
+  "queries_limit": -1,
+  "sonnet_queries_used": 8,
+  "sonnet_queries_limit": 20,
+  "voice_used": 3,
+  "voice_limit": 15,
+  "resets_at": "2025-04-01T00:00:00Z"
+}
+```
+
+Quotas reset on the 1st of each month.

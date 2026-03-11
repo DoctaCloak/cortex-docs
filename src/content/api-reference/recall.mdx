@@ -1,0 +1,67 @@
+---
+title: Recall API
+description: AI-powered semantic recall queries against your knowledge graph.
+---
+
+# Recall API
+
+## Ask a Question
+
+```http
+POST /api/ask
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `query` | string | Yes | Natural language question |
+
+### Smart Model Routing
+
+The system automatically selects the appropriate model:
+
+- **Haiku 4.5** — Default for most queries (~$0.005/query)
+- **Sonnet 4** — Auto-selected when query contains complexity keywords: `synthesize`, `compare`, `analyze`, `debate`, `contrast`, `evaluate`, `summarize all`
+
+Sonnet queries count against your tier's monthly Sonnet quota.
+
+### Example
+
+```bash
+curl -X POST https://api.cortex-app.dev/api/ask \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "What do I know about database concurrency?"}'
+```
+
+### Response `200`
+
+```json
+{
+  "answer": "Based on your notes, you have documented several key points about database concurrency:\n\n1. SQLite handles concurrent reads well using WAL mode but serializes writes...\n2. Connection pooling is essential for high-traffic applications...",
+  "sources": [
+    {
+      "id": "note_a1b2c3d4",
+      "title": "SQLite handles concurrent reads well but only one writer at a time",
+      "similarity": 0.91
+    },
+    {
+      "id": "note_x9y8z7",
+      "title": "Connection pooling reduces database overhead by 80%",
+      "similarity": 0.76
+    }
+  ],
+  "model": "claude-haiku-4-5-20251001"
+}
+```
+
+### Error `429` (Quota Exceeded)
+
+```json
+{
+  "detail": "Monthly query quota exceeded. Upgrade your tier or wait for reset."
+}
+```

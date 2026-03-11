@@ -1,0 +1,178 @@
+---
+title: Installation
+description: Install and configure Cortex for local development or self-hosted deployment.
+---
+
+import { Tabs, Callout, Steps } from 'nextra/components'
+
+# Installation
+
+## System Requirements
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| Python    | 3.11+   | 3.12+       |
+| Node.js   | 18+     | 20+         |
+| RAM       | 2 GB    | 4 GB        |
+| Disk      | 1 GB    | 5 GB        |
+
+<Callout type="info">
+ChromaDB with sentence-transformers downloads embedding models on first run (~400 MB). Ensure you have adequate disk space and bandwidth.
+</Callout>
+
+## Backend Setup
+
+<Steps>
+
+### Clone the repository
+
+```bash
+git clone https://github.com/DoctaCloak/cortex-api.git
+cd cortex-api
+```
+
+### Create a virtual environment
+
+```bash
+python -m venv venv
+source venv/bin/activate  # macOS/Linux
+# or
+venv\Scripts\activate     # Windows
+```
+
+### Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Configure environment variables
+
+Create a `.env` file in the project root:
+
+```env filename=".env"
+# Required
+ANTHROPIC_API_KEY=sk-ant-...
+JWT_SECRET=your-secret-key-here
+
+# Optional
+CORS_ORIGINS=http://localhost:3000
+DATABASE_URL=sqlite:///cortex.db
+CHROMA_PERSIST_DIR=./chroma_data
+```
+
+### Run the server
+
+```bash
+uvicorn main:app --reload --port 8000
+```
+
+The API will be available at `http://localhost:8000`. Visit `http://localhost:8000/docs` for the interactive Swagger UI.
+
+</Steps>
+
+## Frontend Setup
+
+<Steps>
+
+### Clone the repository
+
+```bash
+git clone https://github.com/DoctaCloak/cortex.git
+cd cortex
+```
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Configure environment variables
+
+```env filename=".env.local"
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-nextauth-secret
+
+# GitHub OAuth (for authentication)
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+```
+
+### Run the development server
+
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000` to see Cortex running.
+
+</Steps>
+
+## Setting Up GitHub OAuth
+
+<Steps>
+
+### Create a GitHub OAuth App
+
+1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
+2. Click **New OAuth App**
+3. Fill in the details:
+   - **Application name**: Cortex (Local)
+   - **Homepage URL**: `http://localhost:3000`
+   - **Authorization callback URL**: `http://localhost:3000/api/auth/callback/github`
+
+### Copy credentials
+
+Copy the **Client ID** and generate a **Client Secret**. Add them to your frontend `.env.local`.
+
+</Steps>
+
+## Docker Deployment
+
+```yaml filename="docker-compose.yml"
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+    volumes:
+      - cortex-data:/app/data
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      - backend
+
+volumes:
+  cortex-data:
+```
+
+```bash
+docker-compose up -d
+```
+
+## Verify Installation
+
+Run a quick health check:
+
+```bash
+# Backend
+curl http://localhost:8000/health
+
+# Expected response:
+# {"status": "ok", "notes": 0, "links": 0}
+```
+
+## Next Steps
+
+Now that Cortex is running, [create your first note →](/docs/get-started/create-your-first-note)

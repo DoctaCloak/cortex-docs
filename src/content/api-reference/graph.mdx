@@ -1,0 +1,33 @@
+---
+title: Graph API
+description: Graph statistics, reflection, and maintenance endpoints.
+---
+
+# Graph API
+
+## Get Graph Statistics
+
+```http
+GET /api/graph/stats
+Authorization: Bearer TOKEN
+```
+
+### Response `200`
+
+```json
+{
+  "total_notes": 954,
+  "total_links": 1081,
+  "note_types": {
+    "fact": 312,
+    "insight": 198,
+    "code_finding": 156,
+    "decision": 89,
+    "experience": 78,
+    "synthesis": 67,
+    "belief": 54
+  },
+  "avg_links_per_note": 2.27,
+  "orphan_count": 42
+}
+```

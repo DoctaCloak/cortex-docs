@@ -1,0 +1,143 @@
+---
+title: Notes API
+description: Create, update, and search notes in your knowledge graph.
+---
+
+# Notes API
+
+## Create a Note
+
+```http
+POST /api/workspace/notes
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `title` | string | Yes | Declarative statement (the note's claim) |
+| `content` | string | Yes | Full explanation in your own words |
+| `note_type` | string | Yes | One of: `fact`, `insight`, `decision`, `experience`, `belief`, `code_finding`, `synthesis` |
+| `tags` | string[] | No | Array of tag strings |
+| `importance` | number | No | 0.0–1.0 (default: 0.5) |
+
+### Example
+
+```bash
+curl -X POST https://api.cortex-app.dev/api/workspace/notes \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "SQLite handles concurrent reads well but only one writer at a time",
+    "content": "SQLite uses WAL mode for concurrent reads but serializes writes. For web apps with moderate write loads, this is fine. High-write workloads need Postgres or similar.",
+    "note_type": "fact",
+    "tags": ["sqlite", "databases", "concurrency"],
+    "importance": 0.7
+  }'
+```
+
+### Response `201`
+
+```json
+{
+  "id": "note_a1b2c3d4",
+  "title": "SQLite handles concurrent reads well but only one writer at a time",
+  "note_type": "fact",
+  "state": "active",
+  "importance": 0.7,
+  "tags": ["sqlite", "databases", "concurrency"],
+  "created_at": "2025-03-10T14:30:00Z",
+  "auto_links": [
+    {
+      "target_id": "note_e5f6g7h8",
+      "target_title": "WAL mode improves SQLite read performance by 10x",
+      "relation": "relates_to",
+      "similarity": 0.87
+    }
+  ]
+}
+```
+
+---
+
+## Update a Note
+
+```http
+PUT /api/workspace/notes/:id
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
+
+### Request Body
+
+Same fields as create. All fields are optional — only provided fields are updated.
+
+### Example
+
+```bash
+curl -X PUT https://api.cortex-app.dev/api/workspace/notes/note_a1b2c3d4 \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Updated explanation with more detail...",
+    "importance": 0.8
+  }'
+```
+
+### Response `200`
+
+```json
+{
+  "id": "note_a1b2c3d4",
+  "title": "SQLite handles concurrent reads well but only one writer at a time",
+  "updated_at": "2025-03-10T15:00:00Z"
+}
+```
+
+---
+
+## List / Search Notes
+
+```http
+GET /api/graph/notes?q=search+terms
+Authorization: Bearer TOKEN
+```
+
+### Query Parameters
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `q` | string | Search query (full-text search) |
+
+### Example
+
+```bash
+# List all notes
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  https://api.cortex-app.dev/api/graph/notes
+
+# Search notes
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  "https://api.cortex-app.dev/api/graph/notes?q=sqlite+concurrency"
+```
+
+### Response `200`
+
+```json
+{
+  "notes": [
+    {
+      "id": "note_a1b2c3d4",
+      "title": "SQLite handles concurrent reads well but only one writer at a time",
+      "content": "...",
+      "note_type": "fact",
+      "state": "active",
+      "tags": ["sqlite", "databases"],
+      "importance": 0.7,
+      "created_at": "2025-03-10T14:30:00Z"
+    }
+  ]
+}
+```

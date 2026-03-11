@@ -1,0 +1,71 @@
+---
+title: Note Linking
+description: How notes connect in Cortex — automatic linking, relation types, and graph traversal.
+---
+
+import { Callout } from 'nextra/components'
+
+# Note Linking
+
+Links are what transform a collection of notes into a **knowledge graph**. In Cortex, links are created both automatically and manually.
+
+## Auto-Linking
+
+When you create a note, Cortex automatically:
+
+1. **Embeds the note** using sentence-transformers
+2. **Searches for similar notes** in your graph (cosine similarity > 0.75)
+3. **Creates `relates_to` links** for strong semantic matches
+4. **Emits a `note_linked` activity event** so you can review the connection
+
+<Callout type="info">
+Auto-linking only creates `relates_to` connections. For more specific relationships like `contradicts` or `extends`, create links manually.
+</Callout>
+
+## Relation Types
+
+| Relation | Meaning | Example |
+|----------|---------|---------|
+| `relates_to` | General conceptual connection | "Active recall" ↔ "Testing effect" |
+| `extends` | Builds upon or deepens another note | "Optimal spaced repetition schedule" → "Ebbinghaus forgetting curve" |
+| `contradicts` | Disagrees with or challenges | "Multitasking is efficient" ✗ "Context switching has a 23-minute recovery cost" |
+| `depends_on` | Requires understanding of prerequisite | "Implement caching layer" → "Understand cache invalidation strategies" |
+| `supersedes` | Replaces an older note | "Use SQLite with Litestream" → "Use Postgres for persistence" |
+| `derived_from` | Synthesized from source material | "Learning synthesis" ← "Active recall note" + "Spaced repetition note" |
+
+## Creating Links via API
+
+```bash
+curl -X POST https://api.cortex-app.dev/api/workspace/links \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source_id": "note_a1b2c3d4",
+    "target_id": "note_e5f6g7h8",
+    "relation": "extends"
+  }'
+```
+
+## Graph Traversal
+
+When you query Cortex, it doesn't just search — it **traverses**. A recall query:
+
+1. Finds the top matching notes via semantic search
+2. Walks their links to find connected notes (1–2 hops)
+3. Ranks results by a combination of:
+   - Semantic similarity to the query
+   - Note importance
+   - Link distance (closer = higher weight)
+   - Recency
+
+This means asking "What do I know about learning?" might surface not just notes tagged with "learning", but also linked notes about "memory", "practice", and "cognition" that you'd never find with keyword search.
+
+## Viewing Your Graph
+
+The **Observatory** page visualizes your knowledge graph as an interactive node-link diagram:
+
+- **Nodes** = Notes (sized by importance)
+- **Edges** = Links (colored by relation type)
+- **Clusters** = Groups of densely connected notes
+
+Click any node to see the note's content and its neighborhood.

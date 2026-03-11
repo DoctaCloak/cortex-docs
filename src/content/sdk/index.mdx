@@ -1,0 +1,74 @@
+---
+title: SDK & Integration
+description: Client libraries and integration options for Cortex.
+---
+
+import { Callout } from 'nextra/components'
+
+# SDK & Integration
+
+<Callout type="warning">
+Official SDKs are coming soon. In the meantime, use the REST API directly.
+</Callout>
+
+Cortex provides a REST API that can be consumed from any language. Official client libraries are planned for Python and JavaScript.
+
+## Quick Start (REST)
+
+```bash
+# Create a note
+curl -X POST https://api.cortex-app.dev/api/workspace/notes \
+  -H "Authorization: Bearer $CORTEX_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "My note", "content": "...", "note_type": "fact"}'
+
+# Search notes
+curl "https://api.cortex-app.dev/api/graph/notes?q=search+term" \
+  -H "Authorization: Bearer $CORTEX_TOKEN"
+
+# Ask a question
+curl -X POST https://api.cortex-app.dev/api/ask \
+  -H "Authorization: Bearer $CORTEX_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "What do I know about X?"}'
+```
+
+## Planned SDKs
+
+### Python SDK
+
+```python
+# Coming soon
+from cortex import CortexClient
+
+client = CortexClient(api_key="your-key")
+note = client.notes.create(
+    title="My insight",
+    content="...",
+    note_type="insight",
+)
+answer = client.recall("What do I know about X?")
+```
+
+### JavaScript SDK
+
+```typescript
+// Coming soon
+import { Cortex } from '@cortex/sdk';
+
+const cortex = new Cortex({ apiKey: 'your-key' });
+const note = await cortex.notes.create({
+  title: 'My insight',
+  content: '...',
+  noteType: 'insight',
+});
+const answer = await cortex.recall('What do I know about X?');
+```
+
+## Integration Ideas
+
+- **CLI tool** — Capture notes from the terminal
+- **Browser extension** — Save highlights directly to Cortex
+- **Obsidian plugin** — Sync Obsidian vault with Cortex
+- **VS Code extension** — Document code decisions as notes
+- **Telegram/Discord bot** — Create notes via chat

@@ -3,19 +3,38 @@
   --nextra-primary-saturation: 62%;
 }
 
+/* Ensure page fills viewport and footer sticks to bottom */
 html, body {
-  height: 100%;
-  overflow: auto;
+  min-height: 100vh;
+  margin: 0;
 }
 
-/* Nextra wraps everything in a root div — make it flex column full height */
-body > div:first-child {
-  min-height: 100vh;
+body {
   display: flex;
   flex-direction: column;
 }
 
-/* Main content area fills remaining space */
-body > div:first-child > div:not(:first-child):not(footer) {
+body > div {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Override Nextra's default link colors to match terracotta brand */
+.dark a {
+  color: #eba88a;
+}
+
+.dark a:hover {
+  color: #d97757;
+}
+
+/* Sidebar active item */
+.dark [data-active="true"] {
+  color: #d97757 !important;
+}
+
+/* Code block accent */
+.dark pre {
+  border-color: #5c3024;
 }

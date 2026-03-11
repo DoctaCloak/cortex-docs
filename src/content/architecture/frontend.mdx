@@ -17,14 +17,12 @@ src/app/
 ├── (dashboard)/          # Route group (requires auth)
 │   ├── workspace/
 │   │   └── page.tsx      # Zettelkasten note editor
-│   ├── observatory/
+│   ├── graph-view/
 │   │   └── page.tsx      # Knowledge graph visualization
 │   ├── recall/
 │   │   └── page.tsx      # AI-powered search
-│   ├── sentinel/
-│   │   └── page.tsx      # Graph health monitoring
-│   └── bench/
-│       └── page.tsx      # Performance benchmarks
+│   └── health/
+│       └── page.tsx      # Graph health monitoring
 └── api/
     └── auth/
         └── [...nextauth]/ # NextAuth.js handlers
@@ -37,12 +35,11 @@ Redux Toolkit with the following slices:
 | Slice | Purpose |
 |-------|---------|
 | `graph` | Knowledge graph data (notes, links, stats) |
-| `sentinel` | Graph health and sentinel configuration |
-| `nexus` | Import/export operations |
+| `health` | Graph health monitoring configuration |
+| `importExport` | Import/export operations |
 | `recall` | Search queries and results |
 | `chat` | AI assistant conversation |
 | `ui` | UI state (sidebar, demo mode, themes) |
-| `bench` | Performance benchmark data |
 
 ## Key Components
 
@@ -52,7 +49,7 @@ Wraps the app in Redux Provider. Includes a `StoreInitializer` that fetches init
 
 ### Sidebar
 
-Navigation with tool items (Workspace, Observatory, Recall, etc.) and system items (Sentinel, Nexus, Bench).
+Navigation with tool items (Workspace, Graph View, Recall, etc.) and system items (Health Monitor, Import/Export).
 
 ### useActivityStream Hook
 

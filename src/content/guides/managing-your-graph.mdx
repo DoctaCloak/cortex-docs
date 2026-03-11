@@ -7,12 +7,12 @@ description: Keep your knowledge graph healthy with reflection, pruning, and mai
 
 A knowledge graph requires periodic maintenance to stay useful. Here's how to keep yours healthy.
 
-## Weekly: Reflect
+## Weekly: Analyze
 
-The `reflect` operation analyzes your graph and returns actionable insights:
+The `analyze` operation reviews your graph and returns actionable insights:
 
 ```bash
-curl -X POST https://api.cortex-app.dev/api/graph/reflect \
+curl -X POST https://api.cortex-app.dev/api/graph/analyze \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -22,14 +22,14 @@ It returns:
 - **Orphans**: Unlinked notes → Connect them or consider deleting
 - **Stale notes**: Notes not accessed in 30+ days → Review or archive
 
-## Monthly: Decay and Prune
+## Monthly: Cleanup
 
-Notes naturally lose relevance over time. The decay system helps:
+Notes naturally lose relevance over time. The cleanup system helps:
 
 ### Preview First (Dry Run)
 
 ```bash
-curl -X POST https://api.cortex-app.dev/api/graph/decay \
+curl -X POST https://api.cortex-app.dev/api/graph/cleanup \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{"dry_run": true}'
 ```
@@ -37,12 +37,12 @@ curl -X POST https://api.cortex-app.dev/api/graph/decay \
 ### Then Execute
 
 ```bash
-curl -X POST https://api.cortex-app.dev/api/graph/decay \
+curl -X POST https://api.cortex-app.dev/api/graph/cleanup \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{"dry_run": false}'
 ```
 
-### Decay Resistance
+### Cleanup Resistance
 
 Some notes resist decay:
 - **Pinned notes**: Never decay
@@ -50,17 +50,17 @@ Some notes resist decay:
 - **Recently accessed**: Resets decay timer
 - **Many links**: Well-connected notes decay slower
 
-## Quarterly: Hot Memory Regeneration
+## Quarterly: Summary Regeneration
 
-Hot memory is the auto-loaded summary of your most important knowledge:
+The summary is an auto-loaded overview of your most important knowledge:
 
 ```bash
-curl -X POST https://api.cortex-app.dev/api/graph/hot-memory \
+curl -X POST https://api.cortex-app.dev/api/graph/summary \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{"regenerate": true}'
 ```
 
-This creates a fresh summary of your highest-importance, most-accessed notes.
+This creates a fresh overview of your highest-importance, most-accessed notes.
 
 ## Graph Health Indicators
 

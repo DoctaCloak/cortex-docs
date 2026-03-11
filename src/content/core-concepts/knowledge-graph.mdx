@@ -36,7 +36,7 @@ Early on, notes are isolated islands. As you add more and link them (manually or
 
 ## Viewing Your Graph
 
-The **Observatory** page provides an interactive visualization:
+The **Graph View** page provides an interactive visualization:
 
 - **Force-directed layout** positions related notes closer together
 - **Color** indicates note type (facts, insights, decisions, etc.)
@@ -45,18 +45,18 @@ The **Observatory** page provides an interactive visualization:
 
 ## Graph Operations
 
-### Reflect
+### Analyze
 
-The `reflect` operation analyzes your graph for:
+The `analyze` operation reviews your graph for:
 
 - **Clusters** — groups of 3+ notes that are densely interconnected
 - **Bridge notes** — notes that connect otherwise separate clusters
 - **Orphans** — notes with zero links that might need connecting
 - **Synthesis opportunities** — clusters that could benefit from a summary note
 
-### Decay and Prune
+### Cleanup
 
-Over time, low-importance notes that haven't been accessed or updated lose relevance. The decay system:
+Over time, low-importance notes that haven't been accessed or updated lose relevance. The cleanup system:
 
 1. Calculates a **staleness score** based on age and last access
 2. Notes below the decay threshold are candidates for pruning

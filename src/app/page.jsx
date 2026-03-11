@@ -11,10 +11,10 @@ export default function HomePage() {
       textAlign: 'center',
       padding: '2rem',
     }}>
-      <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1rem' }}>
+      <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1rem', color: '#f5f5f4' }}>
         Cortex Documentation
       </h1>
-      <p style={{ fontSize: '1.25rem', color: '#666', maxWidth: '600px', marginBottom: '2rem' }}>
+      <p style={{ fontSize: '1.25rem', color: '#a8a29e', maxWidth: '600px', marginBottom: '2rem' }}>
         Remember everything. Recall what matters. Build your personal knowledge graph with AI-powered semantic search, Zettelkasten linking, and spaced repetition.
       </p>
       <div style={{ display: 'flex', gap: '1rem' }}>
@@ -35,7 +35,8 @@ export default function HomePage() {
           href="/docs/api-reference"
           style={{
             padding: '0.75rem 2rem',
-            border: '1px solid #eba88a',
+            border: '1px solid #5c3024',
+            color: '#eba88a',
             borderRadius: '8px',
             fontWeight: 600,
             textDecoration: 'none',

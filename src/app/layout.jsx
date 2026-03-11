@@ -26,7 +26,7 @@ const logo = (
 export default async function RootLayout({ children }) {
   const pageMap = await getPageMap()
   return (
-    <html lang="en" dir="ltr" suppressHydrationWarning>
+    <html lang="en" dir="ltr" suppressHydrationWarning className="dark" style={{ colorScheme: 'dark' }}>
       <Head faviconGlyph="🧠" />
       <body>
         <Layout
@@ -45,6 +45,7 @@ export default async function RootLayout({ children }) {
           docsRepositoryBase="https://github.com/DoctaCloak/cortex-docs/blob/main/docs"
           sidebar={{ defaultMenuCollapseLevel: 1 }}
           pageMap={pageMap}
+          nextThemes={{ defaultTheme: 'dark', forcedTheme: 'dark' }}
         >
           {children}
         </Layout>

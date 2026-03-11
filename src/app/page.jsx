@@ -22,7 +22,7 @@ export default function HomePage() {
           href="/docs"
           style={{
             padding: '0.75rem 2rem',
-            background: '#0ea5e9',
+            background: '#d97757',
             color: 'white',
             borderRadius: '8px',
             fontWeight: 600,
@@ -35,7 +35,7 @@ export default function HomePage() {
           href="/docs/api-reference"
           style={{
             padding: '0.75rem 2rem',
-            border: '1px solid #e2e8f0',
+            border: '1px solid #eba88a',
             borderRadius: '8px',
             fontWeight: 600,
             textDecoration: 'none',
